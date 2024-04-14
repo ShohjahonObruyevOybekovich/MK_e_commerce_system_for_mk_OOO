@@ -15,11 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from django.urls import re_path
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
+from django.urls import include
 from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+
 schema_view = get_schema_view(
    openapi.Info(
       title="Khalifa mobile API",
@@ -31,8 +31,14 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
+
+from django.urls import path
+from django.views.generic import TemplateView
+
 urlpatterns = [
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('admin/', admin.site.urls),
+    path('auth/',include('account.urls')),
     path('chat/', include('channelapp.urls')),
     path('api/', include('body.urls')),
 

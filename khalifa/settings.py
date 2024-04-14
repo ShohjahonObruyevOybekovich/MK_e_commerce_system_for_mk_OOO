@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-750d#pb)an7@(o(i5*(3=rhn04yx1dj_t%!8)0w-7f=^@xpi9v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -90,9 +90,35 @@ ASGI_APPLICATION = 'khalifa.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# Your other Django settings...
+
+# Load environment variables from a .env file
+from dotenv import load_dotenv
+load_dotenv()
+
+# Override database settings with environment variables if available
+if os.getenv('DB_ENGINE'):
+    DATABASES['default']['ENGINE'] = os.getenv('DB_ENGINE')
+
+if os.getenv('DB_NAME'):
+    DATABASES['default']['NAME'] = os.getenv('DB_NAME')
+
+if os.getenv('DB_USER'):
+    DATABASES['default']['USER'] = os.getenv('DB_USER')
+
+if os.getenv('DB_PASSWORD'):
+    DATABASES['default']['PASSWORD'] = os.getenv('DB_PASSWORD')
+
+if os.getenv('DB_HOST'):
+    DATABASES['default']['HOST'] = os.getenv('DB_HOST')
+
+if os.getenv('DB_PORT'):
+    DATABASES['default']['PORT'] = os.getenv('DB_PORT')
+
 
 
 # Password validation
