@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = 'django-insecure-750d#pb)an7@(o(i5*(3=rhn04yx1dj_t%!8)0w-7f=^@xpi9v
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -40,14 +38,13 @@ INSTALLED_APPS = [
 
     'drf_yasg',
 
-    #body site
+    # body site
     'channelapp.apps.ChannelappConfig',
     'body.apps.BodyConfig',
     'account.apps.AccountConfig',
 
-    #installed
+    # installed
     'channels',
-
 
 ]
 
@@ -83,7 +80,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'khalifa.wsgi.application'
 ASGI_APPLICATION = 'khalifa.asgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -98,6 +94,7 @@ DATABASES = {
 
 # Load environment variables from a .env file
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Override database settings with environment variables if available
@@ -119,8 +116,6 @@ if os.getenv('DB_HOST'):
 if os.getenv('DB_PORT'):
     DATABASES['default']['PORT'] = os.getenv('DB_PORT')
 
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -139,7 +134,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -151,12 +145,12 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
