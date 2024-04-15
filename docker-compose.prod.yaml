@@ -7,16 +7,16 @@ services:
     expose:
       - 8000
     volumes:
-      - media_file:/app/media
-      - static_file:/app/static
+      - media_file:/media
+      - static_file:/static
 
   nginx:
     build: ./nginx
     ports:
       - 80:80
     volumes:
-      - media_file:/app/media
-      - static_file:/app/static
+      - media_file:/media
+      - static_file:/static
     depends_on:
       - web
 
