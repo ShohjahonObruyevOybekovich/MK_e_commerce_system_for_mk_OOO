@@ -9,8 +9,6 @@ services:
     volumes:
       - media_file:/app/media
       - static_file:/app/static
-    depends_on:
-      - db
 
   nginx:
     build: ./nginx
@@ -25,4 +23,3 @@ services:
 volumes:
   media_file:
   static_file:
-  pgdata:
