@@ -8,7 +8,7 @@ services:
       - 8000
     volumes:
       - media_file:/media
-      - static_file:/static
+      - static_file:/khalifa/static
 
   nginx:
     build: ./nginx
@@ -16,7 +16,7 @@ services:
       - 80:80
     volumes:
       - media_file:/media
-      - static_file:/static
+      - static_file:/khalifa/static
     depends_on:
       - web
 
