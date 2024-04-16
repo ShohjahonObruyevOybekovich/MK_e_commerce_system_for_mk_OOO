@@ -50,6 +50,11 @@ class ProductListforounerAPIView(ListAPIView):
         if category:
             queryset = queryset.filter(category=category)
         return queryset
+class ProductCreateAPIView(CreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductCreateSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
 
 class ProductUpdateAPIView(UpdateAPIView):
     queryset = Product.objects.all()

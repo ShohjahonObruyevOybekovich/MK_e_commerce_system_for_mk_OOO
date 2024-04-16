@@ -5,6 +5,7 @@ urlpatterns = [
     #product abs
     path('product-menu/', ProductMenuAPIView.as_view(), name='product-menu'),
     path('product-menu-for-owner/<int:pk>/', ProductListforounerAPIView.as_view(), name='product-owner-menu'),
+    path('product-create/', ProductCreateAPIView.as_view(), name='product-create'),
     path('product-update/<int:pk>/', ProductUpdateAPIView.as_view(), name='product-update'),
     path('product-delete/<int:pk>/', ProductDeleteAPIView.as_view(), name='product-delete'),
 
