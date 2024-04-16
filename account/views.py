@@ -2,9 +2,10 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -15,6 +16,14 @@ User = get_user_model()
 class UserCreateAPIView(generics.CreateAPIView):
     user = User.objects.all()
     serializer_class = UserCreateSerializer
+
+class ListUserAPIView(generics.ListAPIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self,request,format=None):
+        usernames = [user.username for user in User.objects.all()]
+        return Response(usernames)
 
 
 class CustomAuthToken(ObtainAuthToken):
