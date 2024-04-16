@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     # installed
     'channels',
 
+    'rest_framework',
+
 ]
 
 MIDDLEWARE = [
