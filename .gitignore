@@ -42,3 +42,4 @@ fabric.properties
 
 !/static/drf-yasg/
 !/static/admin/
+!/static/
