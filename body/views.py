@@ -1,9 +1,13 @@
-from django.shortcuts import render
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.generics import ListAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
+from django.shortcuts import get_object_or_404
+from rest_framework import status
+from rest_framework.generics import (
+    ListAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
+)
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.response import Response
 
 from body.permissions import IsOwner
 from body.serialize import *
@@ -15,100 +19,89 @@ class ProductMenuAPIView(ListAPIView):
     authentication_classes = (TokenAuthentication,)
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_fields = ['category']  # Specify the fields you want to filter on
-
-    # Optionally, you can specify ordering and search fields as well
     ordering_fields = ['price']
     search_fields = ['name']
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        # You can customize filtering logic here based on query parameters
         category = self.request.query_params.get('category')
         if category:
             queryset = queryset.filter(category=category)
         return queryset
 
-class ProductListforounerAPIView(ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductListSerializer
-    permission_classes = (IsAuthenticated,IsOwner)
-    authentication_classes = (TokenAuthentication,)
 
+class ProductListforOwnerAPIView(ListAPIView):
+    serializer_class = ProductListSerializer
+    permission_classes = (IsAuthenticated, IsOwner)
+    authentication_classes = (TokenAuthentication,)
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_fields = ['category']
     ordering_fields = ['price']
     search_fields = ['name']
 
-    def get_owner(self):
-        qs = super(ProductListforounerAPIView, self).get_queryset()
-        qs = qs.filter(user=self.request.user)
-        return qs
-
     def get_queryset(self):
-        queryset = self.queryset
-        category = self.request.query_params.get('category')
-        if category:
-            queryset = queryset.filter(category=category)
-        return queryset
+        # Filter queryset based on the current authenticated user
+        return Product.objects.filter(product_owner=self.request.user)
+
 class ProductCreateAPIView(CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductCreateSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
 
+    def perform_create(self, serializer):
+        serializer.save(product_owner=self.request.user)
+
 class ProductUpdateAPIView(UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductUpdateSerializer
-    permission_classes = (IsAuthenticated,IsOwner)
+    permission_classes = (IsAuthenticated, IsOwner)
     authentication_classes = (TokenAuthentication,)
 
-    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
-    filterset_fields = ['category']
-    ordering_fields = ['price']
-    search_fields = ['name']
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=self.kwargs.get('pk'))
+        self.check_object_permissions(self.request, obj)
+        return obj
 
-    def get_queryset(self):
-        queryset = self.queryset
-        category = self.request.query_params.get('category')
-        if category:
-            queryset = queryset.filter(category=category)
-        return queryset
 
+ #fixx
 class ProductDeleteAPIView(DestroyAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductListforounerAPIView
-    permission_classes = (IsAuthenticated,IsOwner)
+    permission_classes = (IsAuthenticated, IsOwner)
     authentication_classes = (TokenAuthentication,)
 
-    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
-    filterset_fields = ['category']
-    ordering_fields = ['price']
-    search_fields = ['name']
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=self.kwargs.get('pk'))
+        self.check_object_permissions(self.request, obj)
+        return obj
 
-    def get_queryset(self):
-        queryset = self.queryset
-        category = self.request.query_params.get('category')
-        if category:
-            queryset = queryset.filter(category=category)
-        return queryset
+# fully correct working
+class PurchaseHistoryCreateAPIView(CreateAPIView):
+    queryset = PurchaseHistory.objects.all()
+    serializer_class = PurchaseHistoryCreateSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
 
+    def perform_create(self, serializer):
+        product_id = self.request.data.get('product_id')
+        # Retrieve the product and calculate price and product_amount
+        product = Product.objects.get(pk=product_id)
+        price = product.price # Assuming product_amount is 1 for simplicity, adjust as needed
+        serializer.save(price=price)
 
 class PurchaseHistoryAPIView(ListAPIView):
     queryset = PurchaseHistory.objects.all()
     serializer_class = PurchaseHistorySerializer
-    permission_classes = (IsAuthenticated,IsOwner)
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
-
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
-    filterset_fields = []
     ordering_fields = ['price']
-    search_fields = ['name']
+    search_fields = ['product__name']
+
     def get_queryset(self):
-        queryset = self.queryset
-        category = self.request.query_params.get('category')
-        if category:
-            queryset = queryset.filter(category=category)
-        return queryset
+        return super().get_queryset().filter(user=self.request.user)
 
 
 class SavatchaCreateAPIView(CreateAPIView):
@@ -117,34 +110,46 @@ class SavatchaCreateAPIView(CreateAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
 
-class SavatchaUpdateAPIView(UpdateAPIView):
-    queryset = Savatcha.objects.all()
-    serializer_class = SavatchaCreateSerializer
-    permission_classes = (IsAuthenticated,IsOwner)
-    authentication_classes = (TokenAuthentication,)
+    def create(self, request, *args, **kwargs):
+        product_id = request.data.get('product')
+        if product_id is None:
+            return Response({"product": ["This field is required."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            product = Product.objects.get(pk=product_id)
+        except Product.DoesNotExist:
+            return Response({"product": ["Invalid product ID."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data={'product': product_id})
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+#problem with outh credentials
+class SavatchaListAPIView(ListAPIView):
+    serializer_class = SavatchaListSerializer
+    permission_classes = (IsAuthenticated,)
+    filter_backends = [SearchFilter]
+    search_fields = ['name']      # Add the fields you want to search
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Savatcha.objects.filter(user=user)
+        return queryset
+
 
 class SavatchaDeleteAPIView(DestroyAPIView):
-
     queryset = Savatcha.objects.all()
-    serializer_class = SavatchaListSerializer
     permission_classes = (IsAuthenticated,IsOwner)
     authentication_classes = (TokenAuthentication,)
 
-class CategoryListAPIView(ListAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategoryListSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (TokenAuthentication,)
-    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
-    filterset_fields = ['name']
-    ordering_fields = ['name']
-    search_fields = ['name']
-    def get_queryset(self):
-        queryset = self.queryset
-        category = self.request.query_params.get('category')
-        if category:
-            queryset = queryset.filter(category=category)
-        return queryset
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=self.kwargs.get('pk'))
+        self.check_object_permissions(self.request, obj)
+        return obj
+
 class CategoryCreateAPIView(CreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryCreateSerializer
@@ -154,20 +159,45 @@ class CategoryCreateAPIView(CreateAPIView):
 class CategoryUpdateAPIView(UpdateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryUpdateSerializer
-    permission_classes = (IsAuthenticated,IsOwner)
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=self.kwargs.get('pk'))
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 class CategoryDeleteAPIView(DestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryListSerializer
-    permission_classes = (IsAuthenticated,IsOwner)
-    authentication_classes = (TokenAuthentication,)
-
-class LikedProductCreateAPIView(ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = LikedProductCreateSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
 
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=self.kwargs.get('pk'))
+        self.check_object_permissions(self.request, obj)
+        return obj
+class CategoryListAPIView(ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategoryListSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_fields = ['name']
+    ordering_fields = ['name']
+    search_fields = ['name']
 
+    def get_queryset(self):
+        queryset = self.queryset
+        category = self.request.query_params.get('category')
+        if category:
+            queryset = queryset.filter(category=category)
+        return queryset
 
+class LikedProductCreateAPIView(CreateAPIView):
+    queryset = liked.objects.all()
+    serializer_class = LikedProductCreateSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
