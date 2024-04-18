@@ -56,14 +56,17 @@ class UserLoginSerializer(serializers.Serializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False)
+    phone = serializers.CharField(max_length=15, required=False)
+    password = serializers.CharField(max_length=128, write_only=True, required=False)
+
     class Meta:
         model = User
-        fields = ('id', 'photo', 'name', 'phone', 'username', 'password', 'user_type', 'groups_joined', 'created_at', 'updated_at')
-        read_only_fields = ('id', 'created_at', 'updated_at', 'username', 'user_type', 'groups_joined')  # Fields that should not be updated directly
+        fields = ['username', 'email', 'image', 'phone', 'password']
 
-    def update(self, instance, validated_data):
-        # Update each field in the validated_data
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        return instance
+    def validate(self, attrs):
+        user = self.instance  # Get the user instance
+        if 'password' in attrs:
+            user.set_password(attrs['password'])  # Set new password if provided
+            user.save()
+        return attrs

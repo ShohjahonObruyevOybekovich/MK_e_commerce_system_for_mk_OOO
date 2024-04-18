@@ -42,7 +42,8 @@ class CustomAuthToken(ObtainAuthToken):
         })
 
 class UserUpdateAPIView(APIView):
-    permission_classes = [IsAuthenticated]  # Make sure the user is authenticated
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
     def get_object(self):
         return self.request.user  # Get the current user
@@ -54,3 +55,12 @@ class UserUpdateAPIView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    def post(self, request, *args, **kwargs):
+        request.user.auth_token.delete()
+        return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)

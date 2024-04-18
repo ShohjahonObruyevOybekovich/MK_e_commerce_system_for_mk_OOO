@@ -25,5 +25,6 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ("username", "name", "phone")
     ordering = ("username",)
 
+    change_form_template = 'admin/auth/user/user_change_form.html'
 
 admin.site.register(CustomUser)
