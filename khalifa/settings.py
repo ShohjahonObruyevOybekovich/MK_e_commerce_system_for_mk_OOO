@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'channels',
 
     'rest_framework',
+    'rest_framework_simplejwt',
     'rest_framework.authtoken'
 
 ]
@@ -80,6 +81,14 @@ TEMPLATES = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+
+}
+
 WSGI_APPLICATION = 'khalifa.wsgi.application'
 ASGI_APPLICATION = 'khalifa.asgi.application'
 
@@ -90,6 +99,16 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+        }
     }
 }
 
@@ -171,3 +190,17 @@ CHANNEL_LAYERS = {
 
 AUTH_USER_MODEL = 'account.CustomUser'
 
+AUTHENTICATION_BACKENDS = [
+    'khalifa.account.permission',
+    'django.contrib.auth.backends.ModelBackend',
+]
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
+CELERY_BROKER_URL = 'redis://localhost:6379/1'
+CELERY_TIMEZONE = TIME_ZONE
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'shohjahonobruyev3@gmail.com'
+EMAIL_HOST_PASSWORD = 'pwmbntlpqmtkxsrd'

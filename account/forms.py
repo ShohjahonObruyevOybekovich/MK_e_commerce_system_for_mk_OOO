@@ -7,11 +7,11 @@ User = get_user_model()
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ("username",)
-        # exclude = ("username",)
+        fields = ("email",)
+        # exclude = ("email",)
 
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
-        fields = ("username",)
+        fields = ("email",)

@@ -130,6 +130,7 @@ class SavatchaCreateAPIView(CreateAPIView):
 class SavatchaListAPIView(ListAPIView):
     serializer_class = SavatchaListSerializer
     permission_classes = (IsAuthenticated,)
+    authentication_classes = [TokenAuthentication]
     filter_backends = [SearchFilter]
     search_fields = ['name']      # Add the fields you want to search
 

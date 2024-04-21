@@ -11,6 +11,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class CustomUser(AbstractUser):
+    email = models.EmailField(unique=True)
     image = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
     phone = models.CharField(max_length=255, null=True, blank=True)
     user_type = models.CharField(max_length=255, default='user')
