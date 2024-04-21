@@ -9,6 +9,23 @@ services:
     volumes:
       - media_file:/app/media
 
+  redis:
+    image: redis:6-alpine
+    volumes:
+      - redis_data:/data/
+    expose:
+      - 6379
+
+  celery:
+    build: .
+    command: celery -A karaoce worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+
+
+
 
 volumes:
   media_file:
