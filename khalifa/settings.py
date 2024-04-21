@@ -38,12 +38,8 @@ INSTALLED_APPS = [
     'drf_yasg', # noqa
 
     # body site
-    'channelapp.apps.ChannelappConfig',
     'body.apps.BodyConfig',
     'account.apps.AccountConfig',
-
-    # installed
-    'channels',
 
     'rest_framework',
     'rest_framework_simplejwt',

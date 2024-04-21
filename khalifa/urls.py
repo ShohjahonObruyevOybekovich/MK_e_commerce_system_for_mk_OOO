@@ -41,7 +41,6 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('admin/', admin.site.urls),
     path('auth/',include('account.urls')),
-    path('chat/', include('channelapp.urls')),
     path('api/', include('body.urls')),
 
 
