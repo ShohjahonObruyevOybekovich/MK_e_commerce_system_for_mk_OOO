@@ -3,14 +3,16 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework.serializers import ModelSerializer
 
+from .models import CustomUser
+
 User = get_user_model()
 
-from .tasks import send_email
+
 
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ('email', 'username','password')
+        model = CustomUser
+        fields = ('email','username','password')
 
 class ConfirmationCodeSerializer(serializers.Serializer):
     email = serializers.EmailField()

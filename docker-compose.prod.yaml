@@ -9,6 +9,8 @@ services:
     volumes:
       - media_file:/app/media
       - static_file:/app/static
+    environment:
+      - TZ=Asia/Tashkent
 
   nginx:
     build: ./nginx
@@ -19,6 +21,8 @@ services:
       - static_file:/app/static
     depends_on:
       - web
+    environment:
+      - TZ=Asia/Tashkent
 
 volumes:
   media_file:

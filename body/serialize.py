@@ -129,3 +129,9 @@ class LikedProductCreateSerializer(serializers.ModelSerializer):
         product_id = validated_data.pop('product_id')
         liked_product = liked.objects.create(user_id=user_id, product_id=product_id)
         return liked_product
+
+class LikedProductListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = liked
+        fields = '__all__'
+

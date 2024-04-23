@@ -202,3 +202,17 @@ class LikedProductCreateAPIView(CreateAPIView):
     serializer_class = LikedProductCreateSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
+
+class LikedProductListAPIView(ListAPIView):
+    serializer_class = LikedProductListSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+    filter_backends = [ SearchFilter]
+    search_fields = ['name']
+
+    def get_queryset(self):
+        queryset = liked.objects.filter(user=self.request.user)
+        liked_param = self.request.query_params.get('liked')
+        if liked_param:
+            queryset = queryset.filter(liked=liked_param)
+        return queryset

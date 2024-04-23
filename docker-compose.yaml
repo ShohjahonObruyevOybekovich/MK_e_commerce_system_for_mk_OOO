@@ -1,7 +1,6 @@
 version: '3'
 
 volumes:
-  redis_data:
   media_file:
 
 services:
@@ -12,16 +11,5 @@ services:
       - 8000:8000
     volumes:
       - media_file:/app/media
-
-  redis:
-    image: redis:6-alpine
-    volumes:
-      - redis_data:/data/
-
-  celery:
-    build: .
-    command: celery -A khalifa worker --loglevel=info
-    volumes:
-      - .:/app
-    depends_on:
-      - redis
+    environment:
+      - TZ=Asia/Tashkent
