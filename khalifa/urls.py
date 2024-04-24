@@ -48,5 +48,12 @@ urlpatterns = [
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
+# from django.views.i18n import set_language
+#
+# urlpatterns_LANG = [
+#     # Other URL patterns
+#     path('set-language/', set_language, name='set_language'),
+# ]
 
+# urlpatterns+=urlpatterns_LANG
 urlpatterns+=static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
