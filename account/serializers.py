@@ -12,7 +12,7 @@ User = get_user_model()
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('email','username','password')
+        fields = ('email','password')
 
 class ConfirmationCodeSerializer(serializers.Serializer):
     email = serializers.EmailField()

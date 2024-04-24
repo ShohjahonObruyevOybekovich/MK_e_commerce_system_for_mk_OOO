@@ -107,29 +107,29 @@ SWAGGER_SETTINGS = {
     }
 }
 
-
-from dotenv import load_dotenv
-
-load_dotenv()
+#
+# from dotenv import load_dotenv
+#
+# load_dotenv()
 
 # Override database settings with environment variables if available
-if os.getenv('DB_ENGINE'):
-    DATABASES['default']['ENGINE'] = os.getenv('DB_ENGINE')
-
-if os.getenv('DB_NAME'):
-    DATABASES['default']['NAME'] = os.getenv('DB_NAME')
-
-if os.getenv('DB_USER'):
-    DATABASES['default']['USER'] = os.getenv('DB_USER')
-
-if os.getenv('DB_PASSWORD'):
-    DATABASES['default']['PASSWORD'] = os.getenv('DB_PASSWORD')
-
-if os.getenv('DB_HOST'):
-    DATABASES['default']['HOST'] = os.getenv('DB_HOST')
-
-if os.getenv('DB_PORT'):
-    DATABASES['default']['PORT'] = os.getenv('DB_PORT')
+# if os.getenv('DB_ENGINE'):
+#     DATABASES['default']['ENGINE'] = os.getenv('DB_ENGINE')
+#
+# if os.getenv('DB_NAME'):
+#     DATABASES['default']['NAME'] = os.getenv('DB_NAME')
+#
+# if os.getenv('DB_USER'):
+#     DATABASES['default']['USER'] = os.getenv('DB_USER')
+#
+# if os.getenv('DB_PASSWORD'):
+#     DATABASES['default']['PASSWORD'] = os.getenv('DB_PASSWORD')
+#
+# if os.getenv('DB_HOST'):
+#     DATABASES['default']['HOST'] = os.getenv('DB_HOST')
+#
+# if os.getenv('DB_PORT'):
+#     DATABASES['default']['PORT'] = os.getenv('DB_PORT')
 
 AUTH_PASSWORD_VALIDATORS = [
     {

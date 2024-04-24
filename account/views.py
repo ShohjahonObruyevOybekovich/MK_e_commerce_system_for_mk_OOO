@@ -34,7 +34,7 @@ class RegisterAPIView(CreateAPIView):
 
         email = serializer.validated_data['email']
         password = serializer.validated_data['password']
-        username = serializer.validated_data['username']
+        # username = serializer.validated_data['username']
 
         confirmation_code = self.generate_confirmation_code()
 
@@ -45,7 +45,7 @@ class RegisterAPIView(CreateAPIView):
 
         cache_data = {
             'email': email,
-            'username': username,
+            # 'username': username,
             'password': password,
             'confirmation_code': confirmation_code
         }
@@ -58,7 +58,7 @@ class ConfirmationCodeAPIView(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
-        username = request.data.get('username')
+        # username = request.data.get('username')
         confirm_code = request.data.get('confirm_code')
         cached_data = cache.get(email)
         # print(cached_data)
@@ -68,12 +68,12 @@ class ConfirmationCodeAPIView(GenericAPIView):
 
             if User.objects.filter(email=email).exists():
                 return Response({'success': False, 'message': 'This email already exists!'}, status=400)
-            if User.objects.filter(username=cached_data['username']).exists():
-                return Response({'success': False, 'message': 'This username already exists!'}, status=400)
+            # if User.objects.filter(username=cached_data['username']).exists():
+            #     return Response({'success': False, 'message': 'This username already exists!'}, status=400)
             else:
                 User.objects.create_user(
                     email=email,
-                    username=cached_data['username'],
+                    # username=cached_data['username'],
                     password=password,
                 )
                 return Response({'success': True})
