@@ -20,7 +20,7 @@ class Product(models.Model):
     product_owner = models.ForeignKey(CustomUser,null=True,blank=True,on_delete=models.SET_NULL)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
-    photo_or_video = models.ImageField(upload_to='product_photos/', null=True, blank=True)
+    photo_or_video = models.FileField(upload_to='product_photos/', null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.updated_at = timezone.now()
