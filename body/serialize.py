@@ -26,7 +26,6 @@ class CategoryListSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'type', 'created_at']
         read_only_fields = ['id', 'created_at']
 
-
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment

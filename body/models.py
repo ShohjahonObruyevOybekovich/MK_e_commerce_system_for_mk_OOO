@@ -10,6 +10,7 @@ class Category(models.Model):
     type = models.CharField(max_length=255)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
+    # product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)

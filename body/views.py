@@ -11,23 +11,24 @@ from rest_framework.response import Response
 
 from body.permissions import IsOwner
 from body.serialize import *
-
+from body.managers import FlexiblePagination
 class ProductMenuAPIView(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductListSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
+    # pagination_class = FlexiblePagination
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_fields = ['category']  # Specify the fields you want to filter on
     ordering_fields = ['price']
     search_fields = ['name']
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        category = self.request.query_params.get('category')
-        if category:
-            queryset = queryset.filter(category=category)
-        return queryset
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     category = self.request.query_params.get('category')
+    #     if category:
+    #         queryset = queryset.filter(category=category)
+    #     return queryset
 
 
 class ProductListforOwnerAPIView(ListAPIView):
@@ -190,12 +191,25 @@ class CategoryListAPIView(ListAPIView):
     ordering_fields = ['name']
     search_fields = ['name']
 
-    def get_queryset(self):
+    def get_object(self):
         queryset = self.queryset
         category = self.request.query_params.get('category')
         if category:
             queryset = queryset.filter(category=category)
         return queryset
+
+class CategoryProductsListAPIView(ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductListSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_fields = ['category']  # Use filterset_fields for exact filtering
+
+    def get_queryset(self):
+        category_id = self.kwargs['pk']  # Access pk from URL parameters
+        return self.queryset.filter(category_id=category_id)
+
 
 class LikedProductCreateAPIView(CreateAPIView):
     queryset = liked.objects.all()
@@ -216,3 +230,25 @@ class LikedProductListAPIView(ListAPIView):
         if liked_param:
             queryset = queryset.filter(liked=liked_param)
         return queryset
+
+class LikedProductDeleteAPIView(DestroyAPIView):
+    queryset = liked.objects.all()
+    serializer_class = LikedProductListSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get_object(self):
+        # Filter by user first
+        queryset = self.queryset.filter(user=self.request.user)
+
+        liked_param = self.request.query_params.get('liked')
+        if liked_param:
+            try:
+                # Try filtering by 'liked' if provided, assuming it's a valid integer field
+                liked_id = int(liked_param)
+                return queryset.get(liked=liked_id)
+            except ValueError:
+                raise Exception("Invalid 'liked' parameter")
+
+        # If no 'liked' parameter, get object by pk from URL
+        return get_object_or_404(queryset, pk=self.kwargs.get('pk'))

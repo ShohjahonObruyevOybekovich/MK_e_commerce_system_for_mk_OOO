@@ -82,6 +82,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10  # Adjust the page size as needed
 }
 
 WSGI_APPLICATION = 'khalifa.wsgi.application'
@@ -192,6 +194,8 @@ JAZZMIN_SETTINGS = {
 
     # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
     "login_logo": None,
+
+    "language_code": "ru",
 
     # Logo to use for login form in dark themes (defaults to login_logo)
     "login_logo_dark": None,
