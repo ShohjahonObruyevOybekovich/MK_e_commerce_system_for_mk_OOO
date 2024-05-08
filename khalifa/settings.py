@@ -161,6 +161,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media/'
+
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
@@ -190,7 +194,7 @@ JAZZMIN_SETTINGS = {
     "site_brand": "Khalifa",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
-    "site_logo": "Account_photos/khalifa_.jpg",
+    "site_logo": "static/img/khalifa_.jpg",
 
     # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
     "login_logo": None,
