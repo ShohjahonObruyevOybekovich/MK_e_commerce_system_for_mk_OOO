@@ -3,6 +3,8 @@ from rest_framework import status
 from rest_framework.generics import (
     ListAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
 )
+from rest_framework.exceptions import NotFound
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -29,6 +31,20 @@ class ProductMenuAPIView(ListAPIView):
     #     if category:
     #         queryset = queryset.filter(category=category)
     #     return queryset
+
+class ProductByIDAPIView(RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductListSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get_object(self):
+        try:
+            obj = self.get_queryset().get(pk=self.kwargs.get('pk'))
+            self.check_object_permissions(self.request, obj)
+            return obj
+        except Product.DoesNotExist:
+            raise NotFound("Product not found.")
 
 
 class ProductListforOwnerAPIView(ListAPIView):
@@ -127,7 +143,20 @@ class SavatchaCreateAPIView(CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-#problem with outh credentials
+
+class SavatchaUpdateAPIView(UpdateAPIView):
+    queryset = Savatcha.objects.all()
+    serializer_class = SavatchaUpdateSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=self.kwargs.get('pk'))
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+
+
 class SavatchaListAPIView(ListAPIView):
     serializer_class = SavatchaListSerializer
     permission_classes = (IsAuthenticated,)
@@ -219,16 +248,14 @@ class LikedProductCreateAPIView(CreateAPIView):
 
 class LikedProductListAPIView(ListAPIView):
     serializer_class = LikedProductListSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (TokenAuthentication,)
-    filter_backends = [ SearchFilter]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    filter_backends = [SearchFilter]
     search_fields = ['name']
 
     def get_queryset(self):
-        queryset = liked.objects.filter(user=self.request.user)
-        liked_param = self.request.query_params.get('liked')
-        if liked_param:
-            queryset = queryset.filter(liked=liked_param)
+        user = self.request.user
+        queryset = liked.objects.filter(user=user)
         return queryset
 
 class LikedProductDeleteAPIView(DestroyAPIView):

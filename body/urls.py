@@ -4,6 +4,7 @@ from body.views import *
 urlpatterns = [
     # Product URLs
     path('product-menu/', ProductMenuAPIView.as_view(), name='product-menu'),
+    path('product-by-id/<int:pk>/', ProductByIDAPIView.as_view(), name='product-detail'),
     # path('product-menu-for-owner/', ProductListforOwnerAPIView.as_view(), name='product-owner-menu'),
     # path('product-create/', ProductCreateAPIView.as_view(), name='product-create'),
     # path('product-update/<int:pk>/', ProductUpdateAPIView.as_view(), name='product-update'),
@@ -16,7 +17,7 @@ urlpatterns = [
     # Savatcha URLs
     path('savatcha-create/', SavatchaCreateAPIView.as_view(), name='savatcha-create'),
     path('savatcha-list/', SavatchaListAPIView.as_view(), name='savatcha-list'),
-    # path('savatcha-update/<int:pk>/', SavatchaUpdateAPIView.as_view(), name='savatcha-update'),
+    path('savatcha-update/<int:pk>/', SavatchaUpdateAPIView.as_view(), name='savatcha-update'),
     path('savatcha-delete/<int:pk>/', SavatchaDeleteAPIView.as_view(), name='savatcha-delete'),
 
     # Category URLs
@@ -28,6 +29,6 @@ urlpatterns = [
 
     # Liked Products URL
     path('liked-product-create/', LikedProductCreateAPIView.as_view(), name='liked-product-create'),
-    path('liked-product-list/', LikedProductListAPIView.as_view(), name='liked-product-list'),
+    path('liked-products/', LikedProductListAPIView.as_view(), name='liked-product-list'),
     path('api/liked-product-delete/<int:pk>/', LikedProductDeleteAPIView.as_view(), name='liked-product-delete'),
 ]

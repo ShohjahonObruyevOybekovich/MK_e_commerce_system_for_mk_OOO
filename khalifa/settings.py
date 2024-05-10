@@ -194,7 +194,7 @@ JAZZMIN_SETTINGS = {
     "site_brand": "Khalifa",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
-    "site_logo": "static/img/khalifa_.jpg",
+    "site_logo": "media/Account_photos/khalifa_.jpg",
 
     # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
     "login_logo": None,

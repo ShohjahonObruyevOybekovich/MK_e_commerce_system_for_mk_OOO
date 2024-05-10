@@ -38,21 +38,21 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['name', 'photo_or_video','category','price', 'product_comment', 'product_owner']
+        fields = ['name', 'photos_or_videos','category','price', 'product_comment', 'product_owner']
         read_only_fields = ['created_at']
 
 
 class ProductUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['name', 'photo_or_video', 'price', 'product_comment']
+        fields = ['name', 'photos_or_videos', 'price', 'product_comment']
         read_only_fields = ['created_at', 'product_owner']
 
 
 class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id','name','product_owner', 'photo_or_video','category' ,'price', 'product_comment']
+        fields = ['id','name','product_owner', 'photos_or_videos','category' ,'price', 'product_comment']
         read_only_fields = ['created_at']
 class ProductListforSavatchaSerializer(serializers.ModelSerializer):
     class Meta:
