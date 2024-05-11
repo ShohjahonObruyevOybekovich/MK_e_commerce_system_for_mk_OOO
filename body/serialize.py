@@ -99,8 +99,6 @@ class PurchaseHistorySerializer(serializers.ModelSerializer):
 
 
 class SavatchaCreateSerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), write_only=True)
-
     class Meta:
         model = Savatcha
         fields = ['product']
