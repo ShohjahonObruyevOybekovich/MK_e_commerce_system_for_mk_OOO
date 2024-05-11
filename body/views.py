@@ -17,8 +17,8 @@ from body.managers import FlexiblePagination
 class ProductMenuAPIView(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductListSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (TokenAuthentication,)
+    # permission_classes = (IsAuthenticated,)
+    # authentication_classes = (TokenAuthentication,)
     # pagination_class = FlexiblePagination
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_fields = ['category']  # Specify the fields you want to filter on
@@ -35,8 +35,8 @@ class ProductMenuAPIView(ListAPIView):
 class ProductByIDAPIView(RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductListSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (TokenAuthentication,)
+    # permission_classes = (IsAuthenticated,)
+    # authentication_classes = (TokenAuthentication,)
 
     def get_object(self):
         try:
@@ -213,8 +213,8 @@ class CategoryDeleteAPIView(DestroyAPIView):
 class CategoryListAPIView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryListSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (TokenAuthentication,)
+    # permission_classes = (IsAuthenticated,)
+    # authentication_classes = (TokenAuthentication,)
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_fields = ['name']
     ordering_fields = ['name']
@@ -230,13 +230,13 @@ class CategoryListAPIView(ListAPIView):
 class CategoryProductsListAPIView(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductListSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (TokenAuthentication,)
+    # permission_classes = (IsAuthenticated,)
+    # authentication_classes = (TokenAuthentication,)
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_fields = ['category']  # Use filterset_fields for exact filtering
 
     def get_queryset(self):
-        category_id = self.kwargs['pk']  # Access pk from URL parameters
+        category_id = self.kwargs.get('pk') # Access pk from URL parameters
         return self.queryset.filter(category_id=category_id)
 
 

@@ -93,8 +93,8 @@ class liked(models.Model):
     updated_at = models.DateField(auto_now=True)
 
 
-class Comments(models.Model):
-    id = models.IntegerField(primary_key=True)
-    text = models.TextField()
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    comment_to_product = models.ForeignKey(Product, on_delete=models.CASCADE)
+# class Comments(models.Model):
+#     id = models.IntegerField(primary_key=True)
+#     text = models.TextField()
+#     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+#     comment_to_product = models.ForeignKey(Product, on_delete=models.CASCADE)

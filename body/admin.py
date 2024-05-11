@@ -1,6 +1,6 @@
 from django.contrib import admin
 from body.models import *
-admin.site.register([Payment,PurchaseHistory,liked,Savatcha,Category,Comments])
+admin.site.register([Payment,PurchaseHistory,liked,Savatcha,Category])
 
 from .models import Product, ProductMedia
 

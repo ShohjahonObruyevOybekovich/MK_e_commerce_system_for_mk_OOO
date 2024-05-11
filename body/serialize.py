@@ -1,7 +1,11 @@
+from rest_framework import request
+
 from django.utils import timezone
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Product, PurchaseHistory, Savatcha, Category, liked, Payment
+
+from account.serializers import UserSerializer
+from .models import Product, PurchaseHistory, Savatcha, Category, liked, Payment, ProductMedia
 
 User = get_user_model()
 
@@ -48,8 +52,13 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
         fields = ['name', 'photos_or_videos', 'price', 'product_comment']
         read_only_fields = ['created_at', 'product_owner']
 
+class ProductMediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductMedia
+        fields = '__all__'
 
 class ProductListSerializer(serializers.ModelSerializer):
+    photos_or_videos = ProductMediaSerializer(many=True, read_only=True)
     class Meta:
         model = Product
         fields = ['id','name','product_owner', 'photos_or_videos','category' ,'price', 'product_comment']
@@ -102,6 +111,7 @@ class SavatchaCreateSerializer(serializers.ModelSerializer):
 
 
 class SavatchaListSerializer(serializers.ModelSerializer):
+    product = ProductListSerializer(read_only=True)
     class Meta:
         model = Savatcha
         fields = '__all__'
@@ -114,22 +124,25 @@ class SavatchaUpdateSerializer(serializers.ModelSerializer):
 
 
 
+
+
 class LikedProductCreateSerializer(serializers.ModelSerializer):
-    user_id = serializers.IntegerField()  # Field for user ID
-    product_id = serializers.IntegerField()  # Field for product ID
+    product_id = serializers.IntegerField()
+    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = liked
-        fields = ['user_id', 'product_id']
-        read_only_fields = ['created_at']
+        fields = ['user', 'product_id']  # Include 'user' and 'product_id'
+        read_only_fields = ['user']  # Make 'user' read-only
 
     def create(self, validated_data):
-        user_id = validated_data.pop('user_id')
-        product_id = validated_data.pop('product_id')
-        liked_product = liked.objects.create(user_id=user_id, product_id=product_id)
-        return liked_product
+        user = self.context['request'].user  # Get user from context
+        liked_obj = liked.objects.create(user=user, **validated_data)
+        return liked_obj
+
 
 class LikedProductListSerializer(serializers.ModelSerializer):
+    product = ProductListSerializer()
     class Meta:
         model = liked
         fields = '__all__'
