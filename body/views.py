@@ -264,6 +264,12 @@ class LikedProductDeleteAPIView(DestroyAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"success": True, "message": "Liked product deleted successfully."},
+                        status=status.HTTP_204_NO_CONTENT)
+
     def get_object(self):
         # Filter by user first
         queryset = self.queryset.filter(user=self.request.user)

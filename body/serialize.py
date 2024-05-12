@@ -86,22 +86,12 @@ class PurchaseHistoryCreateSerializer(serializers.ModelSerializer):
         purchase = PurchaseHistory.objects.create(user_id=user_id, product_id=product_id, **validated_data)
         return purchase
 
-class PurchaseHistorySerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
-    product = ProductListSerializer()
-    total_amount = serializers.DecimalField(max_digits=10,
-                                            decimal_places=2)  # Assuming this field exists in PurchaseHistory model
-
-    class Meta:
-        model = PurchaseHistory
-        fields = ['product_amount', 'price', 'user', 'product', 'total_amount']
-        read_only_fields = ['created_at']
 
 
 class SavatchaCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Savatcha
-        fields = ['product']
+        fields = ['product','product_amount']
 
     def create(self, validated_data):
         return Savatcha.objects.create(product=validated_data['product'], user=self.context['request'].user)
@@ -117,11 +107,31 @@ class SavatchaListSerializer(serializers.ModelSerializer):
 class SavatchaUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Savatcha
-        fields = ['product']
+        fields = ['product','product_amount']
         read_only_fields = ['created_at']
 
 
 
+class PurchaseHistorySerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+    product = ProductListSerializer()
+    total_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+    # Define a serializer method field to fetch product_amount
+    product_amount = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PurchaseHistory
+        fields = ['product_amount', 'price', 'user', 'product', 'total_amount']
+        read_only_fields = ['created_at']
+
+    def get_product_amount(self, obj):
+        # Assuming PurchaseHistory has a ForeignKey to Savatcha and related_name is 'purchase_history'
+        savatcha_instance = obj.product.purchase_history.first()
+        if savatcha_instance:
+            serializer = SavatchaListSerializer(savatcha_instance)
+            return serializer.data['product_amount']
+        return None
 
 
 class LikedProductCreateSerializer(serializers.ModelSerializer):

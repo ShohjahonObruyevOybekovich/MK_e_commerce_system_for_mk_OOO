@@ -68,7 +68,7 @@ class PurchaseHistory(models.Model):
     id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    product_amount = models.SmallIntegerField()
+    product_amount = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, editable=False, blank=True)
     created_at = models.DateField(auto_now_add=True)
@@ -82,6 +82,7 @@ class Savatcha(models.Model):
     id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_amount = models.IntegerField(default=1)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
 
