@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.db import models
+from django.db.models import UniqueConstraint
 from django.utils import timezone
 from account.models import CustomUser
 import json
@@ -90,8 +91,13 @@ class liked(models.Model):
     id = models.IntegerField(primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    liked_status = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['user', 'product'], name='unique_liked_product')
+        ]
 
 
 # class Comments(models.Model):

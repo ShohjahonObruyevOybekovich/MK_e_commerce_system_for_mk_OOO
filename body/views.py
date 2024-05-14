@@ -10,6 +10,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from body.permissions import IsOwner
 from body.serialize import *
@@ -239,13 +240,6 @@ class CategoryProductsListAPIView(ListAPIView):
         category_id = self.kwargs.get('pk') # Access pk from URL parameters
         return self.queryset.filter(category_id=category_id)
 
-
-class LikedProductCreateAPIView(CreateAPIView):
-    queryset = liked.objects.all()
-    serializer_class = LikedProductCreateSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (TokenAuthentication,)
-
 class LikedProductListAPIView(ListAPIView):
     serializer_class = LikedProductListSerializer
     permission_classes = [IsAuthenticated]
@@ -260,28 +254,31 @@ class LikedProductListAPIView(ListAPIView):
 
 class LikedProductDeleteAPIView(DestroyAPIView):
     queryset = liked.objects.all()
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = LikedProductListSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (TokenAuthentication,)
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response({"success": True, "message": "Liked product deleted successfully."},
-                        status=status.HTTP_204_NO_CONTENT)
+class LikedUserListAPIView(ListAPIView):
+    serializer_class = LikedUserSerializer
 
-    def get_object(self):
-        # Filter by user first
-        queryset = self.queryset.filter(user=self.request.user)
+    def get_queryset(self):
+        product_id = self.kwargs['product_id']  # Assuming you're passing product_id in URL
+        return User.objects.filter(id__in=liked.objects.filter(product_id=product_id).values_list('user_id', flat=True))
 
-        liked_param = self.request.query_params.get('liked')
-        if liked_param:
-            try:
-                # Try filtering by 'liked' if provided, assuming it's a valid integer field
-                liked_id = int(liked_param)
-                return queryset.get(liked=liked_id)
-            except ValueError:
-                raise Exception("Invalid 'liked' parameter")
 
-        # If no 'liked' parameter, get object by pk from URL
-        return get_object_or_404(queryset, pk=self.kwargs.get('pk'))
+
+class LikedProductCreateAPIView(CreateAPIView):
+    serializer_class = LikedProductCreateSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+
+        user = self.request.user
+        product_id = serializer.validated_data['product_id']
+
+        if liked.objects.filter(user=user, product_id=product_id).exists():
+            raise serializers.ValidationError("User has already liked this product")
+
+        serializer.save(liked=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -135,23 +135,42 @@ class PurchaseHistorySerializer(serializers.ModelSerializer):
 
 
 class LikedProductCreateSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     product_id = serializers.IntegerField()
-    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = liked
-        fields = ['user', 'product_id']  # Include 'user' and 'product_id'
-        read_only_fields = ['user']  # Make 'user' read-only
-
-    def create(self, validated_data):
-        user = self.context['request'].user  # Get user from context
-        liked_obj = liked.objects.create(user=user, **validated_data)
-        return liked_obj
+        fields = ['user', 'product_id','liked_status']  # Include 'user' and 'product'
+        read_only_fields = ['user','liked_status']  # Make 'user' read-only
 
 
 class LikedProductListSerializer(serializers.ModelSerializer):
     product = ProductListSerializer()
+    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
     class Meta:
         model = liked
         fields = '__all__'
 
+
+
+# class ProductLikedListSerializer(serializers.ModelSerializer):
+#     liked = LikedProductListSerializer(many=True, read_only=True)
+#     user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+#
+#     class Meta:
+#         model = Product
+#         fields = ['id', 'liked', 'user']
+
+
+
+class LikedUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
+
+class LikedProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = liked
+        fields = ['user', 'product', 'liked_status']

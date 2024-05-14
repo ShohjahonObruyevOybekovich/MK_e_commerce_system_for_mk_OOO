@@ -28,7 +28,13 @@ urlpatterns = [
     # path('category-delete/<int:pk>/', CategoryDeleteAPIView.as_view(), name='category-delete'),
 
     # Liked Products URL
-    path('liked-product-create/', LikedProductCreateAPIView.as_view(), name='liked-product-create'),
+    # path('liked-product-create/', LikedProductCreateAPIView.as_view(), name='liked-product-create'),
     path('liked-products/', LikedProductListAPIView.as_view(), name='liked-product-list'),
-    path('api/liked-product-delete/<int:pk>/', LikedProductDeleteAPIView.as_view(), name='liked-product-delete'),
+    path('liked-product-delete/<int:pk>/', LikedProductDeleteAPIView.as_view(), name='liked-product-delete'),
+    # path('product-liked-by-user/', ProductLikedListAPIView.as_view(), name='product-liked-by-user'),
+
+    path('products-liked-users/<int:product_id>/', LikedUserListAPIView.as_view(), name='liked-users-list'),
+
+    path('liked-products-create/', LikedProductCreateAPIView.as_view(), name='liked-product-create'),
+
 ]
