@@ -273,12 +273,11 @@ class LikedProductCreateAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-
         user = self.request.user
         product_id = serializer.validated_data['product_id']
 
         if liked.objects.filter(user=user, product_id=product_id).exists():
             raise serializers.ValidationError("User has already liked this product")
 
-        serializer.save(liked=True)
+        serializer.save(liked_status=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

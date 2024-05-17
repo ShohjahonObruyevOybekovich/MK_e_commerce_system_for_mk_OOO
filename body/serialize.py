@@ -140,8 +140,8 @@ class LikedProductCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = liked
-        fields = ['user', 'product_id','liked_status']  # Include 'user' and 'product'
-        read_only_fields = ['user','liked_status']  # Make 'user' read-only
+        fields = ['id','user', 'product_id','liked_status']  # Include 'user' and 'product'
+        read_only_fields = ['user','liked_status','id']  # Make 'user' read-only
 
 
 class LikedProductListSerializer(serializers.ModelSerializer):
