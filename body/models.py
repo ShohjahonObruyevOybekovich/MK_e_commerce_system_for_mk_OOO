@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+import uuid
 from django.db import models
 from django.db.models import UniqueConstraint
 from django.utils import timezone
@@ -80,24 +81,29 @@ class PurchaseHistory(models.Model):
         super().save(*args, **kwargs)
 
 class Savatcha(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    uuid = models.UUIDField(unique=True,default=uuid.uuid4(), editable=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     product_amount = models.IntegerField(default=1)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
 
+
 class liked(models.Model):
-    id = models.IntegerField(primary_key=True)
+    uuid = models.UUIDField(unique=True,default=uuid.uuid4(), editable=False)
+    # id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    liked_status = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
+
     class Meta:
         constraints = [
-            UniqueConstraint(fields=['user', 'product'], name='unique_liked_product')
+            models.UniqueConstraint(fields=['user', 'product'], name='liked_product')
         ]
+
+    def __str__(self):
+        return f"{self.user} liked {self.product}"
 
 
 # class Comments(models.Model):

@@ -91,7 +91,7 @@ class PurchaseHistoryCreateSerializer(serializers.ModelSerializer):
 class SavatchaCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Savatcha
-        fields = ['product','product_amount']
+        fields = ['product','product_amount','uuid']
 
     def create(self, validated_data):
         return Savatcha.objects.create(product=validated_data['product'], user=self.context['request'].user)
@@ -140,8 +140,8 @@ class LikedProductCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = liked
-        fields = ['id','user', 'product_id','liked_status']  # Include 'user' and 'product'
-        read_only_fields = ['user','liked_status','id']  # Make 'user' read-only
+        fields = ['user', 'product_id','uuid']  # Include 'user' and 'product'
+        read_only_fields = ['user','uuid']  # Make 'user' read-only
 
 
 class LikedProductListSerializer(serializers.ModelSerializer):

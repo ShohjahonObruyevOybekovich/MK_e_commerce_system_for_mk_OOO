@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.generics import (
     ListAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
 )
+import uuid
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -112,7 +113,7 @@ class PurchaseHistoryCreateAPIView(CreateAPIView):
 class PurchaseHistoryAPIView(ListAPIView):
     queryset = PurchaseHistory.objects.all()
     serializer_class = PurchaseHistorySerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,IsOwner)
     authentication_classes = (TokenAuthentication,)
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     ordering_fields = ['price']
@@ -130,31 +131,29 @@ class SavatchaCreateAPIView(CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         product_id = request.data.get('product')
+        product_amount = request.data.get('product_amount')
         if product_id is None:
             return Response({"product": ["This field is required."]}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            product = Product.objects.get(pk=product_id)
-        except Product.DoesNotExist:
-            return Response({"product": ["Invalid product ID."]}, status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = self.get_serializer(data={'product': product_id})
+        serializer = self.get_serializer(data={'product': product_id, 'product_amount':product_amount})
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        serializer.save(uuid=uuid.uuid4())
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class SavatchaUpdateAPIView(UpdateAPIView):
     queryset = Savatcha.objects.all()
     serializer_class = SavatchaUpdateSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOwner)
     authentication_classes = (TokenAuthentication,)
+
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
-        obj = get_object_or_404(queryset, pk=self.kwargs.get('pk'))
+        obj = get_object_or_404(queryset, uuid=self.kwargs.get('uuid'))
         self.check_object_permissions(self.request, obj)
         return obj
+
 
 
 
@@ -173,12 +172,14 @@ class SavatchaListAPIView(ListAPIView):
 
 class SavatchaDeleteAPIView(DestroyAPIView):
     queryset = Savatcha.objects.all()
-    permission_classes = (IsAuthenticated,IsOwner)
+    serializer_class = SavatchaListSerializer
+    permission_classes = (IsAuthenticated, IsOwner)
     authentication_classes = (TokenAuthentication,)
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
-        obj = get_object_or_404(queryset, pk=self.kwargs.get('pk'))
+        uuid = self.kwargs.get('uuid')
+        obj = get_object_or_404(queryset, uuid=uuid)
         self.check_object_permissions(self.request, obj)
         return obj
 
@@ -255,9 +256,14 @@ class LikedProductListAPIView(ListAPIView):
 class LikedProductDeleteAPIView(DestroyAPIView):
     queryset = liked.objects.all()
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    serializer_class = LikedProductListSerializer
+    permission_classes = [IsAuthenticated,IsOwner]
 
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        uuid = self.kwargs.get('uuid')
+        obj = get_object_or_404(queryset, uuid=uuid)
+        self.check_object_permissions(self.request, obj)
+        return obj
 class LikedUserListAPIView(ListAPIView):
     serializer_class = LikedUserSerializer
 
@@ -279,5 +285,6 @@ class LikedProductCreateAPIView(CreateAPIView):
         if liked.objects.filter(user=user, product_id=product_id).exists():
             raise serializers.ValidationError("User has already liked this product")
 
-        serializer.save(liked_status=True)
+        serializer.save(uuid=uuid.uuid4())
+        print(str(serializer.data))
         return Response(serializer.data, status=status.HTTP_201_CREATED)

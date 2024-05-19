@@ -17,8 +17,8 @@ urlpatterns = [
     # Savatcha URLs
     path('savatcha-create/', SavatchaCreateAPIView.as_view(), name='savatcha-create'),
     path('savatcha-list/', SavatchaListAPIView.as_view(), name='savatcha-list'),
-    path('savatcha-update/<int:pk>/', SavatchaUpdateAPIView.as_view(), name='savatcha-update'),
-    path('savatcha-delete/<int:pk>/', SavatchaDeleteAPIView.as_view(), name='savatcha-delete'),
+    path('savatcha-update/<uuid:uuid>/', SavatchaUpdateAPIView.as_view(), name='savatcha-update'),
+    path('savatcha-delete/<uuid:uuid>/', SavatchaDeleteAPIView.as_view(), name='savatcha-delete'),
 
     # Category URLs
     path('category-list/', CategoryListAPIView.as_view(), name='category-list'),
@@ -28,10 +28,8 @@ urlpatterns = [
     # path('category-delete/<int:pk>/', CategoryDeleteAPIView.as_view(), name='category-delete'),
 
     # Liked Products URL
-    # path('liked-product-create/', LikedProductCreateAPIView.as_view(), name='liked-product-create'),
     path('liked-products/', LikedProductListAPIView.as_view(), name='liked-product-list'),
-    path('liked-product-delete/<int:pk>/', LikedProductDeleteAPIView.as_view(), name='liked-product-delete'),
-    # path('product-liked-by-user/', ProductLikedListAPIView.as_view(), name='product-liked-by-user'),
+    path('liked-product-delete/<uuid:uuid>/', LikedProductDeleteAPIView.as_view(), name='liked-product-delete'),
 
     path('products-liked-users/<int:product_id>/', LikedUserListAPIView.as_view(), name='liked-users-list'),
 
