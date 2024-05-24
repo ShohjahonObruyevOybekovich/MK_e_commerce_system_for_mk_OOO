@@ -4,6 +4,7 @@ from body.views import *
 urlpatterns = [
     # Product URLs
     path('product-menu/', ProductMenuAPIView.as_view(), name='product-menu'),
+    path('product-owner-info/<int:pk>/',ProductownerinfoListAPIView.as_view(), name='product-owner-info'),
     path('product-by-id/<int:pk>/', ProductByIDAPIView.as_view(), name='product-detail'),
     # path('product-menu-for-owner/', ProductListforOwnerAPIView.as_view(), name='product-owner-menu'),
     # path('product-create/', ProductCreateAPIView.as_view(), name='product-create'),
@@ -34,5 +35,5 @@ urlpatterns = [
     path('products-liked-users/<int:product_id>/', LikedUserListAPIView.as_view(), name='liked-users-list'),
 
     path('liked-products-create/', LikedProductCreateAPIView.as_view(), name='liked-product-create'),
-
-]
+    path('get-app-version/',GetAppVersionListAPIView.as_view(), name='get-app-version')
+    ]

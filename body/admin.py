@@ -23,3 +23,6 @@ class ProductMediaAdmin(admin.ModelAdmin):
 # class Is_homepageAdmin(admin.ModelAdmin):
 #     pass
 
+@admin.register(Versions)
+class VersionsAdmin(admin.ModelAdmin):
+    pass

@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from prompt_toolkit.application.application import Application
 from rest_framework import status
 from rest_framework.generics import (
     ListAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
@@ -13,6 +14,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from account.models import CustomUser
 from body.permissions import IsOwner
 from body.serialize import *
 from body.managers import FlexiblePagination
@@ -50,7 +52,7 @@ class ProductByIDAPIView(RetrieveAPIView):
 
 
 class ProductListforOwnerAPIView(ListAPIView):
-    serializer_class = ProductListSerializer
+    serializer_class = ProductownerinfoListSerializer
     permission_classes = (IsAuthenticated, IsOwner)
     authentication_classes = (TokenAuthentication,)
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
@@ -60,7 +62,8 @@ class ProductListforOwnerAPIView(ListAPIView):
 
     def get_queryset(self):
         # Filter queryset based on the current authenticated user
-        return Product.objects.filter(product_owner=self.request.user)
+        return Product.objects.filter(product_owner=super().get_queryset()
+                                      .filter(product_owner=self.request.user))
 
 class ProductCreateAPIView(CreateAPIView):
     queryset = Product.objects.all()
@@ -96,7 +99,26 @@ class ProductDeleteAPIView(DestroyAPIView):
         self.check_object_permissions(self.request, obj)
         return obj
 
-# fully correct working
+
+
+
+
+class ProductownerinfoListAPIView(ListAPIView):
+    serializer_class = ProductownerinfoListSerializer
+
+    def get_queryset(self):
+        product_id = self.kwargs.get('pk')
+        print(User.objects.filter(
+            email__in=Product.objects.filter(id=product_id).values_list('product_owner__email', flat=True)))
+
+        return User.objects.filter(
+            email__in=Product.objects.filter(id=product_id).values_list('product_owner__email', flat=True)
+        )
+
+
+
+
+
 class PurchaseHistoryCreateAPIView(CreateAPIView):
     queryset = PurchaseHistory.objects.all()
     serializer_class = PurchaseHistoryCreateSerializer
@@ -288,3 +310,9 @@ class LikedProductCreateAPIView(CreateAPIView):
         serializer.save(uuid=uuid.uuid4())
         print(str(serializer.data))
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class GetAppVersionListAPIView(ListAPIView):
+    queryset = Versions.objects.all()
+    serializer_class = GetAppVersionSerializer
+

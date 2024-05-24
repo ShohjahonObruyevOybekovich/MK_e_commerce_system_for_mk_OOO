@@ -111,3 +111,24 @@ class liked(models.Model):
 #     text = models.TextField()
 #     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 #     comment_to_product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+from django.db import models
+
+class Versions(models.Model):
+    id = models.AutoField(primary_key=True)
+    version_new = models.CharField(max_length=255)
+    version_last = models.CharField(max_length=255, default=" ",null=True)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        # Check if the instance already exists in the database
+        if self.pk:
+            # Fetch the current instance from the database
+            current_instance = Versions.objects.get(pk=self.pk)
+            # Update version_last with the current version_new before saving
+            self.version_last = current_instance.version_new
+        super(Versions, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"New Version: {self.version_new}, Last Version: {self.version_last}"

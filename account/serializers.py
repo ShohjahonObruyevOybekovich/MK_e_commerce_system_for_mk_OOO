@@ -62,7 +62,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email','image', 'phone', 'password']
+        fields = ['email','image', 'phone', 'password','telegram_username']
 
     def validate(self, attrs):
         user = self.instance  # Get the user instance
@@ -74,8 +74,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 class UserListSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'password']
+        fields = ['id', 'email', 'username', 'password','telegram_username']
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ('image','first_name', 'last_name', 'email',  'phone','username')
+        fields = ('image','first_name', 'last_name', 'email',  'phone','username','telegram_username')

@@ -5,7 +5,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 from account.serializers import UserSerializer
-from .models import Product, PurchaseHistory, Savatcha, Category, liked, Payment, ProductMedia
+from .models import Product, PurchaseHistory, Savatcha, Category, liked, Payment, ProductMedia, Versions
 
 User = get_user_model()
 
@@ -68,6 +68,12 @@ class ProductListforSavatchaSerializer(serializers.ModelSerializer):
         model = Product
         fields = ['name']
         read_only_fields = ['created_at']
+
+class ProductownerinfoListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
 
 class PurchaseHistoryCreateSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField()  # Field for user ID
@@ -174,3 +180,9 @@ class LikedProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = liked
         fields = ['user', 'product', 'liked_status']
+
+class GetAppVersionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Versions
+        fields = '__all__'
+        read_only_fields = ['created_at']

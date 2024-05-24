@@ -13,6 +13,7 @@ class CustomUser(AbstractUser):
     image = models.ImageField(upload_to='media/profile_pics/', null=True, blank=True)
     phone = models.CharField(max_length=255, null=True, blank=True)
     user_type = models.CharField(max_length=255, default='user')
+    telegram_username = models.CharField(max_length=255, null=True, blank=True,unique=True)
     # groups_joined = models.IntegerField(null=True, blank=True)
     created_at = models.DateField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateField(auto_now=True, null=True, blank=True)
