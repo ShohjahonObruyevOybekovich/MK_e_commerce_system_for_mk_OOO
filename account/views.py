@@ -49,7 +49,9 @@ class RegisterAPIView(CreateAPIView):
             'password': password,
             'confirmation_code': confirmation_code
         }
+        # print(cache_data)
         cache.set(email, cache_data, timeout=300)
+        # print(cache)
         return Response({'confirmation_code': confirmation_code}, status=status.HTTP_201_CREATED)
 
 
@@ -61,8 +63,9 @@ class ConfirmationCodeAPIView(GenericAPIView):
         # username = request.data.get('username')
         confirm_code = request.data.get('confirm_code')
         cached_data = cache.get(email)
-        # print(cached_data)
 
+        print(confirm_code)
+        print(cached_data)
         if cached_data and confirm_code == cached_data['confirmation_code']:
             password = cached_data['password']
 
