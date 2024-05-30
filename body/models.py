@@ -34,6 +34,8 @@ class Category(models.Model):
 #
 #     def __str__(self):
 #         return self.name
+
+#ex_owner field will delete couse of new incoming features like abilty to create a product permission for all user who want to be costumer!
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -41,6 +43,8 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     product_comment = models.CharField(max_length=255, null=True, blank=True)
     product_owner = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.SET_NULL)
+    ex_owner_number = models.CharField(max_length=255, null=True, blank=True)
+    ex_owner_tg_username = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     photos_or_videos = models.ManyToManyField('ProductMedia')

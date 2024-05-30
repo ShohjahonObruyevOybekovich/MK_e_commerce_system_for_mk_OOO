@@ -1,10 +1,6 @@
-from rest_framework import request
-
-from django.utils import timezone
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
 
-from account.serializers import UserSerializer
 from .models import Product, PurchaseHistory, Savatcha, Category, liked, Payment, ProductMedia, Versions
 
 User = get_user_model()
@@ -57,11 +53,14 @@ class ProductMediaSerializer(serializers.ModelSerializer):
         model = ProductMedia
         fields = '__all__'
 
+
+
+#ex_owner field will delete couse of new incoming features like abilty to create a product permission for all user who want to be costumer!
 class ProductListSerializer(serializers.ModelSerializer):
     photos_or_videos = ProductMediaSerializer(many=True, read_only=True)
     class Meta:
         model = Product
-        fields = ['id','name','product_owner', 'photos_or_videos','category' ,'price', 'product_comment']
+        fields = ['id','name','product_owner', 'photos_or_videos','category' ,'price', 'product_comment','ex_owner_number','ex_owner_tg_username']
         read_only_fields = ['created_at']
 class ProductListforSavatchaSerializer(serializers.ModelSerializer):
     class Meta:
