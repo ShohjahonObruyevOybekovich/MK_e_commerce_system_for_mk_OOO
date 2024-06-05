@@ -122,6 +122,8 @@ class Versions(models.Model):
     id = models.AutoField(primary_key=True)
     version_new = models.CharField(max_length=255)
     version_last = models.CharField(max_length=255, default=" ",null=True)
+    link_for_IOS = models.CharField(max_length=255, null=True)
+    link_for_android = models.CharField(max_length=255, null=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
 
