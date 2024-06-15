@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from account.models import CustomUser
+from django.contrib.auth.models import Group
+
+from account.models import CustomUser, UserRole, Role
 from account.forms import CustomUserChangeForm, CustomUserCreationForm
 class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm,CustomUserCreationForm
@@ -30,3 +32,19 @@ class CustomUserAdmin(UserAdmin):
     change_form_template = 'admin/auth/user/user_change_form.html'
 
 admin.site.register(CustomUser)
+
+
+
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ('email', 'full_name', 'phone', 'telegram_username', 'created_at', 'updated_at')
+    search_fields = ('email', 'full_name', 'phone', 'telegram_username')
+
+@admin.register(Role)
+class RoleAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+@admin.register(UserRole)
+class UserRoleAdmin(admin.ModelAdmin):
+    list_display = ('user', 'role')
+    search_fields = ('user__email', 'role__name')

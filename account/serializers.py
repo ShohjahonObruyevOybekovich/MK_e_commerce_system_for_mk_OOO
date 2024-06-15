@@ -74,7 +74,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 class UserListSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email',"full_name", 'password','telegram_username']
+        fields = ['id',"image",'email',"full_name", 'password','telegram_username']
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User

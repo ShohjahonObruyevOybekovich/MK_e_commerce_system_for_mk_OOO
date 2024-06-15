@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # body site
     'body.apps.BodyConfig',
     'account.apps.AccountConfig',
+    'custom_admin',
 
     'rest_framework',
     'rest_framework_simplejwt',

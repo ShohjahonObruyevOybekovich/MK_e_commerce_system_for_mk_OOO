@@ -42,6 +42,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/',include('account.urls')),
     path('api/', include('body.urls')),
+    path('admin-api/',include('custom_admin.urls')),
 
 
     path('docs<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
